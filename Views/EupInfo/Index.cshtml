@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "資料讀取";
+}
+
+@model ResultModel
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(function() {
+        $("#getdata").click(function () {
+            $.get("EupInfo/InsertData", function (data, status) {
+                $("#content").text(data.message);
+            });
+                
+        });
+    });
+</script>
+
+<div class="text-left">
+    <span id="content">@Model.message</span>
+    <button id="getdata" type="button">資料匯入</button>
+</div>
