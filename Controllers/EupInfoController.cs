@@ -42,16 +42,26 @@ namespace EupDriversInfo.Controllers
                 string EupToken = "68a09f1f-84d2-4dc0-a369-d985df0b63fc";
                 string ApiServerUrl = "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP";
                 string SessionIdAPI = $"{ApiServerUrl}/login/session";
-                string DriversWorkHourAPI = $"{ApiServerUrl}/drivers/info";
+                string DriversinfoAPI = $"{ApiServerUrl}/drivers/info";
                 var model = new EupDriverInfo()
                 {
                     AccessToken = EupToken,
                     ApiUrl = SessionIdAPI,
+                    DriversinfoAPI = DriversinfoAPI
                 };
-                model.GetSESSION_ID();
+                if (model.GetDriversInfo())
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    Result.result = false;
+                    Result.message = $"資料載入失敗";
+                }
+                else
+                {
+                    Result.result = true;
+                    Result.message = $"資料已寫入{model.SessionID}";
+                }
 
-                Result.result = true;
-                Result.message = $"資料已寫入{model.SessionID}";
+                
             }
             catch (Exception ex)
             {

@@ -2,14 +2,21 @@
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using static EupDriversInfo.Models.EupDriverInfo.DriverInfoobj;
 
 namespace EupDriversInfo.Models
 {
     public class EupDriverInfo
     {
+        /// <summary>
+        /// 連線字串
+        /// </summary>
+        private readonly string _connectString = @"Server=ITTC-04509-0050\\SQLEXPRESS;Database=EupData;User ID=sa;Password=ssmsLion220090;";
+
         public string? ApiUrl { get; set; }
         public string? AccessToken { get; set; }
         public string? SessionID { get; set; }
+        public string? DriversinfoAPI { get; set; }
 
         /// <summary>
         /// 登入
@@ -19,15 +26,15 @@ namespace EupDriversInfo.Models
             /// <summary>
             /// 訊息
             /// </summary>
-            public string responseMsg { get; set; }
+            public string? responseMsg { get; set; }
             /// <summary>
             /// 更新失敗結果(僅在新增/修改/刪除時有用)
             /// </summary>
-            public SessionID_Item result { get; set; }
+            public SessionID_Item? result { get; set; }
             /// <summary>
             /// 更新失敗結果(僅在新增/修改/刪除時有用)
             /// </summary>
-            public string failResult { get; set; }
+            public string? failResult { get; set; }
             /// <summary>
             /// integer<int32>
             /// </summary>
@@ -38,12 +45,70 @@ namespace EupDriversInfo.Models
                 /// <summary>
                 /// token
                 /// </summary>
-                public string token { get; set; }
+                public string? token { get; set; }
                 /// <summary>
                 /// sessionId
                 /// </summary>
-                public string sessionId { get; set; }
+                public string? sessionId { get; set; }
             }
+        }
+
+        /// <summary>
+        /// 駕駛資訊
+        /// </summary>
+        public class DriverInfoobj
+        {
+            /// <summary>
+            /// 訊息
+            /// </summary>
+            public string? responseMsg { get; set; }
+            /// <summary>
+            /// 更新失敗結果(僅在新增/修改/刪除時有用)
+            /// </summary>
+            public List<DriverInfo_Item> result { get; set; }
+            /// <summary>
+            /// 更新失敗結果(僅在新增/修改/刪除時有用)
+            /// </summary>
+            public string? failResult { get; set; }
+            /// <summary>
+            /// integer<int32>
+            /// </summary>
+            public int responseStatus { get; set; }
+
+            public class DriverInfo_Item
+            {
+                /// <summary>
+                /// 駕駛名稱
+                /// </summary>
+                public string? driverName { get; set; }
+                /// <summary>
+                /// 登入帳號
+                /// </summary>
+                public string? account { get; set; }
+                /// <summary>
+                /// 最後登入時間
+                /// </summary>
+                public DateTime? lastLoginTime { get; set; }
+            }
+        }
+
+        /// <summary>
+        /// Dapper ORM
+        /// </summary>
+        public class DriverData
+        {
+            /// <summary>
+            /// 駕駛名稱
+            /// </summary>
+            public string? driverName { get; set; }
+            /// <summary>
+            /// 登入帳號
+            /// </summary>
+            public string? account { get; set; }
+            /// <summary>
+            /// 最後登入時間
+            /// </summary>
+            public DateTime? lastLoginTime { get; set; }
         }
 
         /// <summary>
@@ -88,30 +153,34 @@ namespace EupDriversInfo.Models
 
         }
 
-        /// <summary>
-        /// 以Token登入取得SESSION_ID
-        /// </summary>
-        public void GetSESSION_ID_V2()
+        public bool GetDriversInfo()
         {
+            bool result = false;
             string SionIdRsqMsg = "";
             HttpStatusCode SionIdRspStatusCode = HttpStatusCode.InternalServerError;
+
             try
             {
-                ApiUrl += "?token=" + AccessToken;
 
-                HttpClient _httpClient = new ();
+                GetSESSION_ID(); //取得SESSIONID授權
 
-                HttpWebRequest? SionIdRsq = WebRequest.Create(ApiUrl) as HttpWebRequest;
-                SionIdRsq.Method = "POST";
-                SionIdRsq.Timeout = 1000 * 60;
+                if (string.IsNullOrEmpty(DriversinfoAPI))
+                {
+                    return false;
+                }
 
-                byte[] paramData = Encoding.UTF8.GetBytes("");
-                SionIdRsq.ContentLength = paramData.Length;
+                HttpWebRequest? request = WebRequest.Create(DriversinfoAPI) as HttpWebRequest;
+                request.Method = "Get";
+                request.Timeout = 1000 * 60; //逾時放寬至 2分鐘;
 
-                SionIdRsq.ContentType = "application/json; charset=utf-8";
+                WebHeaderCollection Header2Collection = request.Headers;
+                Header2Collection.Add("Authorization", "Bearer " + SessionID); //Bearer Token 表頭帶入
+                //byte[] paramData = Encoding.UTF8.GetBytes("");
+                //ionIdRsq.ContentLength = paramData.Length;
+                //SionIdRsq.ContentType = "application/json";
 
                 // 發送請求並獲取響應
-                using (HttpWebResponse? SionIdRsp = SionIdRsq.GetResponse() as HttpWebResponse)
+                using (HttpWebResponse? SionIdRsp = request.GetResponse() as HttpWebResponse)
                 {
                     SionIdRspStatusCode = SionIdRsp.StatusCode;
                     using (StreamReader sr = new StreamReader(SionIdRsp.GetResponseStream()))
@@ -120,10 +189,19 @@ namespace EupDriversInfo.Models
                     }
                 }
 
-                SessionIDobj? _SessionID = JsonConvert.DeserializeObject<SessionIDobj>(SionIdRsqMsg);
-                if (SionIdRspStatusCode == HttpStatusCode.OK && _SessionID.responseMsg == "SUCCESS")
+                DriverInfoobj? _DriverInfoobj = JsonConvert.DeserializeObject<DriverInfoobj>(SionIdRsqMsg);
+                if (SionIdRspStatusCode == HttpStatusCode.OK && _DriverInfoobj.responseMsg == "SUCCESS")
                 {
-                    this.SessionID = _SessionID.result.sessionId;
+                    //ToDo
+                    #region dapper 多筆寫入
+                    foreach (var Item in _DriverInfoobj.result)
+                    {
+                        //資料處理
+                        var Convertdata = ConvertDrvData(Item);
+
+                        //
+                    }
+                    #endregion
                 }
             }
             catch
@@ -131,6 +209,17 @@ namespace EupDriversInfo.Models
                 throw;
             }
 
+            return result;
+        }
+
+        public DriverData ConvertDrvData(DriverInfo_Item DrvItem)
+        {
+            return new DriverData()
+            {
+                driverName = DrvItem.driverName,
+                account = DrvItem.account?.Length < 6 ? DrvItem.account.PadLeft(6, '0') : DrvItem.account,
+                lastLoginTime = DrvItem.lastLoginTime != null ? DrvItem.lastLoginTime : DateTime.Now,
+            };
         }
     }
 }
