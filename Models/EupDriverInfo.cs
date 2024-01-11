@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Dapper;
+using Newtonsoft.Json;
+using System.Data.SqlClient;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -11,7 +13,8 @@ namespace EupDriversInfo.Models
         /// <summary>
         /// 連線字串
         /// </summary>
-        private readonly string _connectString = @"Server=ITTC-04509-0050\\SQLEXPRESS;Database=EupData;User ID=sa;Password=ssmsLion220090;";
+        //private readonly string _connectString = @"Server=ITTC-04509-0050\\SQLEXPRESS;Database=EupData;User ID=sa;Password=ssmsLion220090;";
+        private readonly string _connectString = @"Server=.\SQLEXPRESS;Database=EupData;User ID=sa;Password=ssmsLion220090;";
 
         public string? ApiUrl { get; set; }
         public string? AccessToken { get; set; }
@@ -192,14 +195,34 @@ namespace EupDriversInfo.Models
                 DriverInfoobj? _DriverInfoobj = JsonConvert.DeserializeObject<DriverInfoobj>(SionIdRsqMsg);
                 if (SionIdRspStatusCode == HttpStatusCode.OK && _DriverInfoobj.responseMsg == "SUCCESS")
                 {
+                    var Drvs = new List<DriverData>();
                     //ToDo
                     #region dapper 多筆寫入
                     foreach (var Item in _DriverInfoobj.result)
                     {
                         //資料處理
                         var Convertdata = ConvertDrvData(Item);
+                        Drvs.Add(Convertdata);
+                    }
 
-                        //
+                    using (SqlConnection conn = new SqlConnection(_connectString))
+                    {
+                        var sql =
+                        @"
+                                INSERT INTO dbo.Driver
+                                (
+                                    driverName,
+                                    account,
+                                    lastLoginTime
+                                )
+                                VALUES
+                                ( 
+                                    @driverName,
+                                    @account,
+                                    @lastLoginTime
+                                );
+                            ";
+                        var execnum = conn.Execute(sql, Drvs);
                     }
                     #endregion
                 }
