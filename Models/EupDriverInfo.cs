@@ -8,18 +8,13 @@ using static EupDriversInfo.Models.EupDriverInfo.DriverInfoobj;
 
 namespace EupDriversInfo.Models
 {
-    public class EupDriverInfo
+    public class EupDriverInfo : BaseDrv
     {
-        /// <summary>
-        /// 連線字串
-        /// </summary>
-        //private readonly string _connectString = @"Server=ITTC-04509-0050\\SQLEXPRESS;Database=EupData;User ID=sa;Password=ssmsLion220090;";
-        private readonly string _connectString = @"Server=.\SQLEXPRESS;Database=EupData;User ID=sa;Password=ssmsLion220090;";
-
         public string? ApiUrl { get; set; }
         public string? AccessToken { get; set; }
         public string? SessionID { get; set; }
         public string? DriversinfoAPI { get; set; }
+        public int DriversCnt { get; set; }
 
         /// <summary>
         /// 登入
@@ -205,10 +200,18 @@ namespace EupDriversInfo.Models
                         Drvs.Add(Convertdata);
                     }
 
-                    using (SqlConnection conn = new SqlConnection(_connectString))
+                    using SqlConnection conn = new(_connectString);
+
+                    var sql = @"
+                                DBCC CHECKIDENT ('Driver', RESEED, 0);
+                                DELETE FROM dbo.Driver;
+                            ";
+                    var delCnt = conn.Execute(sql);
+
+                    if (delCnt > 0)
                     {
-                        var sql =
-                        @"
+                        sql =
+                            @"
                                 INSERT INTO dbo.Driver
                                 (
                                     driverName,
@@ -223,7 +226,9 @@ namespace EupDriversInfo.Models
                                 );
                             ";
                         var execnum = conn.Execute(sql, Drvs);
+                        this.DriversCnt = execnum;
                     }
+
                     #endregion
                 }
             }
