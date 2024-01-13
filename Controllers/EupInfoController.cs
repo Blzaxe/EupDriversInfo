@@ -58,7 +58,7 @@ namespace EupDriversInfo.Controllers
                 else
                 {
                     Result.result = true;
-                    Result.message = $"資料已寫入{model.SessionID}";
+                    Result.message = $"資料已寫入 {model.DriversCnt} 筆";
                 }
 
                 
@@ -77,7 +77,7 @@ namespace EupDriversInfo.Controllers
         [HttpGet]
         public IActionResult Search()
         {
-            return View();
+            return View("~/Views/EupInfo/Search.cshtml");
         }
 
         [HttpPost]
