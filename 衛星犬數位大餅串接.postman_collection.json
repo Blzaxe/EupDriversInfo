@@ -1,0 +1,227 @@
+{
+	"info": {
+		"_postman_id": "5e540ac2-7c6d-47a5-b320-cf7508a522c8",
+		"name": "衛星犬數位大餅串接",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18000239"
+	},
+	"item": [
+		{
+			"name": "以Token登入取得SESSION_ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody)\r",
+							"//console.log(jsonData.Data.AccessToken)\r",
+							"postman.setEnvironmentVariable(\"authorization\", jsonData.result.sessionId );\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP/login/session?token={{token}}",
+					"protocol": "https",
+					"host": [
+						"slt",
+						"eup",
+						"tw"
+					],
+					"port": "8444",
+					"path": [
+						"Eup_Servlet_API_SOAP",
+						"login",
+						"session"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[駕駛資訊]取得駕駛資料",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP/drivers/info",
+					"protocol": "https",
+					"host": [
+						"slt",
+						"eup",
+						"tw"
+					],
+					"port": "8444",
+					"path": [
+						"Eup_Servlet_API_SOAP",
+						"drivers",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[駕駛資訊]取得所有駕駛之駕駛工時",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "bearer eyJhbGciOiJIUzUxMiJ9.eyJjdXN0SW1pZCI6IjM2NzMiLCJsb2dpblRpbWUiOiIyMDIzLTA4LTE2IDE1OjU0OjI2IiwidGVhbUlkIjoiMzAwMDI5NyIsImN1c3RJZCI6IjMwMDAzMjgiLCJleHAiOjE2OTIyNTg4NjZ9.kTkimtRgyhZgSZcDd5PqSiBoTYoqo0IIFCXBINsudrwWJiFEylAu8biNn2KBqDfrtbYJkQYurg3MnC5TUilh-Q",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP/drivers/work_hour?startTime=2023-10-02T00:00:00%2B0800&endTime=2023-10-02T23:59:59%2B0800&breakMinute=60&bufferMinute=5",
+					"protocol": "https",
+					"host": [
+						"slt",
+						"eup",
+						"tw"
+					],
+					"port": "8444",
+					"path": [
+						"Eup_Servlet_API_SOAP",
+						"drivers",
+						"work_hour"
+					],
+					"query": [
+						{
+							"key": "startTime",
+							"value": "2023-10-02T00:00:00%2B0800"
+						},
+						{
+							"key": "endTime",
+							"value": "2023-10-02T23:59:59%2B0800"
+						},
+						{
+							"key": "breakMinute",
+							"value": "60"
+						},
+						{
+							"key": "bufferMinute",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[大餅資訊]取得數位大餅車輛清單",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP/cars/edr_info",
+					"protocol": "https",
+					"host": [
+						"slt",
+						"eup",
+						"tw"
+					],
+					"port": "8444",
+					"path": [
+						"Eup_Servlet_API_SOAP",
+						"cars",
+						"edr_info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[大餅資訊]取得大餅車輛行駛紀錄",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authorization}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP/car/log_data/log_data_file?carNumber=KAC-0691&queryDate=2023-09-17",
+					"protocol": "https",
+					"host": [
+						"slt",
+						"eup",
+						"tw"
+					],
+					"port": "8444",
+					"path": [
+						"Eup_Servlet_API_SOAP",
+						"car",
+						"log_data",
+						"log_data_file"
+					],
+					"query": [
+						{
+							"key": "carNumber",
+							"value": "KAC-0691"
+						},
+						{
+							"key": "queryDate",
+							"value": "2023-09-17"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
