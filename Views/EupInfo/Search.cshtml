@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "資料查詢";
+}
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(function() {
+        cosole.log("載入畫面...");
+    });
+</script>
+
+<div class="text-left">
+    駕駛姓名:<input id="driverName" type="text" class="form-control">
+    駕駛編號:<input id="account" type="text" class="form-control">>
+    <button id="getdata" type="button">查詢</button>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+    </table>
+</div>
