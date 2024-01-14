@@ -10,10 +10,12 @@ namespace EupDriversInfo.Controllers
     public class EupInfoController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration _config;
 
-        public EupInfoController(ILogger<HomeController> logger)
+        public EupInfoController(ILogger<HomeController> logger, IConfiguration config)
         {
             _logger = logger;
+            _config = config;
         }
 
         [HttpGet]
@@ -43,7 +45,7 @@ namespace EupDriversInfo.Controllers
                 string ApiServerUrl = "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP";
                 string SessionIdAPI = $"{ApiServerUrl}/login/session";
                 string DriversinfoAPI = $"{ApiServerUrl}/drivers/info";
-                var model = new EupDriverInfo()
+                var model = new EupDriverInfo(_config)
                 {
                     AccessToken = EupToken,
                     ApiUrl = SessionIdAPI,
