@@ -24,4 +24,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+//
+app.MapGet("/", () => @$"
+Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}
+MySetting: {app.Configuration["DBConfig:ConnectionStrings"]}");
+
 app.Run();

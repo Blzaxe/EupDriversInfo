@@ -10,6 +10,7 @@ namespace EupDriversInfo.Models
 {
     public class EupDriverInfo : BaseDrv
     {
+        public EupDriverInfo(IConfiguration config) : base(config) { }
         public string? ApiUrl { get; set; }
         public string? AccessToken { get; set; }
         public string? SessionID { get; set; }

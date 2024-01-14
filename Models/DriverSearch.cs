@@ -5,6 +5,7 @@ namespace EupDriversInfo.Models
 {
     public class DriverSearch : BaseDrv
     {
+        public DriverSearch(IConfiguration config) : base(config) { }
         public string? driverName { get; set; }
 
         public string? account { get; set; }
