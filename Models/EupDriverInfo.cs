@@ -10,7 +10,14 @@ namespace EupDriversInfo.Models
 {
     public class EupDriverInfo : BaseDrv
     {
-        public EupDriverInfo(IConfiguration config) : base(config) { }
+        public EupDriverInfo(IConfiguration config) : base(config)
+        {
+            AccessToken = _config["EupInfo:EupToken"];
+            string ApiServerUrl = _config["EupInfo:APServerUrl"];
+            ApiUrl = $"{ApiServerUrl}{_config["EupInfo:SessionIdAction"]}";
+            DriversinfoAPI = $"{ApiServerUrl}{_config["EupInfo:DriversinfoAction"]}";
+
+        }
         public string? ApiUrl { get; set; }
         public string? AccessToken { get; set; }
         public string? SessionID { get; set; }
@@ -206,10 +213,10 @@ namespace EupDriversInfo.Models
                     var sql = @"
                                 DBCC CHECKIDENT ('Driver', RESEED, 0);
                                 DELETE FROM dbo.Driver;
-                            ";
+                              ";
                     var delCnt = conn.Execute(sql);
 
-                    if (delCnt > 0)
+                    if (delCnt >= 0)
                     {
                         sql =
                             @"
