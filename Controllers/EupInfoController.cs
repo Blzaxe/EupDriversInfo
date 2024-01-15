@@ -41,16 +41,18 @@ namespace EupDriversInfo.Controllers
             try
             {
                 //呼叫外部api
-                string EupToken = "68a09f1f-84d2-4dc0-a369-d985df0b63fc";
-                string ApiServerUrl = "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP";
-                string SessionIdAPI = $"{ApiServerUrl}/login/session";
-                string DriversinfoAPI = $"{ApiServerUrl}/drivers/info";
-                var model = new EupDriverInfo(_config)
-                {
-                    AccessToken = EupToken,
-                    ApiUrl = SessionIdAPI,
-                    DriversinfoAPI = DriversinfoAPI
-                };
+                //string EupToken = "68a09f1f-84d2-4dc0-a369-d985df0b63fc";
+                //string ApiServerUrl = "https://slt.eup.tw:8444/Eup_Servlet_API_SOAP";
+                //string SessionIdAPI = $"{ApiServerUrl}/login/session";
+                //string DriversinfoAPI = $"{ApiServerUrl}/drivers/info";
+                //var model = new EupDriverInfo(_config)
+                //{
+                //    AccessToken = EupToken,
+                //    ApiUrl = SessionIdAPI,
+                //    DriversinfoAPI = DriversinfoAPI
+                //};
+
+                var model = new EupDriverInfo(_config) { };
                 if (model.GetDriversInfo())
                 {
                     Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -63,7 +65,7 @@ namespace EupDriversInfo.Controllers
                     Result.message = $"資料已寫入 {model.DriversCnt} 筆";
                 }
 
-                
+
             }
             catch (Exception ex)
             {
@@ -79,13 +81,22 @@ namespace EupDriversInfo.Controllers
         [HttpGet]
         public IActionResult Search()
         {
-            return View("~/Views/EupInfo/Search.cshtml");
+            DriverSearch IDriverSearch = new()
+            {
+                driverName = "我是司機",
+                account = "AABBCC",
+                DataList = new()
+            };
+
+            return View("~/Views/EupInfo/Search.cshtml", IDriverSearch);
         }
 
         [HttpPost]
-        public IActionResult Search(string a)
+        public IActionResult Search(DriverSearch IDriverSearch)
         {
-            return View();
+            Drivers DrvMethod = new(_config);
+            IDriverSearch.DataList = DrvMethod.GetDrvs(IDriverSearch);
+            return View(IDriverSearch);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
