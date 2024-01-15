@@ -1,11 +1,12 @@
 ﻿using static EupDriversInfo.Models.EupDriverInfo.DriverInfoobj;
 using static EupDriversInfo.Models.EupDriverInfo;
+using System.Data.SqlClient;
+using Dapper;
 
 namespace EupDriversInfo.Models
 {
-    public class DriverSearch : BaseDrv
+    public class DriverSearch
     {
-        public DriverSearch(IConfiguration config) : base(config) { }
         public string? driverName { get; set; }
 
         public string? account { get; set; }
@@ -25,11 +26,6 @@ namespace EupDriversInfo.Models
             /// 最後登入時間
             /// </summary>
             public DateTime? lastLoginTime { get; set; }
-        }
-
-        public bool GetDrvs(DriverSearch IDriverSearch)
-        {
-            return true;
         }
     }
 }
