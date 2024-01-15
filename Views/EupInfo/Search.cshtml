@@ -1,23 +1,56 @@
-﻿@{
+﻿<!DOCTYPE html>
+@{
     ViewData["Title"] = "資料查詢";
 }
 
+@model DriverSearch
+
 <script src="~/lib/jquery/dist/jquery.js"></script>
+
 <script>
-    $(function() {
-        cosole.log("載入畫面...");
+    $(function () {
+        console.log("載入畫面...");
+
+        $("#getdata").click(function () {
+            //let model = { driverName: $("#driverName").val(), account: $("#account").val() };
+            //$.ajax({
+            //    type: 'POST',
+            //    url: '/EupInfo/Search',
+            //    contentType: "application/json; charset=utf-8",
+            //    data: JSON.stringify(model),
+            //    success: function (data) {
+            //        console.log("post 取得資料");
+            //    },
+            //    error: function (xhr, status, error) {
+            //        console.log("錯誤: " + error);
+            //    }
+            //});
+        });
     });
 </script>
-
-<div class="text-left">
-    駕駛姓名:<input id="driverName" type="text" class="form-control">
-    駕駛編號:<input id="account" type="text" class="form-control">>
-    <button id="getdata" type="button">查詢</button>
-    <table class="table">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-    </table>
-</div>
+<form method="post">
+    <div class="text-left">
+        駕駛姓名:<input id="driverName" type="text" class="form-control" value="@Model.driverName">
+        駕駛編號:<input id="account" type="text" class="form-control" value="@Model.account">
+        <button id="getdata" type="submit" class="btn btn-success">查詢</button>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">駕駛姓名</th>
+                    <th scope="col">駕駛帳號</th>
+                    <th scope="col">最後登入時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var Item in Model.DataList)
+                {
+                    <tr>
+                        <td>@Item.driverName</td>
+                        <td>@Item.account</td>
+                        <td>@string.Format("{0:yyyy/MM/dd hh:mm:ss}",Item.lastLoginTime)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</form>
