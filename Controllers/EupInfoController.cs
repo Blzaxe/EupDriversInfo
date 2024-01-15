@@ -92,7 +92,7 @@ namespace EupDriversInfo.Controllers
         }
 
         [HttpPost]
-        public IActionResult Search(DriverSearch IDriverSearch)
+        public IActionResult Search([FromForm] DriverSearch IDriverSearch)
         {
             Drivers DrvMethod = new(_config);
             IDriverSearch.DataList = DrvMethod.GetDrvs(IDriverSearch);
