@@ -30,8 +30,8 @@
 </script>
 <form method="post">
     <div class="text-left">
-        駕駛姓名:<input id="driverName" type="text" class="form-control" value="@Model.driverName">
-        駕駛編號:<input id="account" type="text" class="form-control" value="@Model.account">
+        駕駛姓名:<input id="driverName" type="text" class="form-control" asp-for="driverName" value="@Model.driverName">
+        駕駛編號:<input id="account" type="text" class="form-control" asp-for="account" value="@Model.account">
         <button id="getdata" type="submit" class="btn btn-success">查詢</button>
         <table class="table">
             <thead class="thead-dark">
